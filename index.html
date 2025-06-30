@@ -599,6 +599,7 @@
             <option value="Light Rain">Light Rain</option>
             <option value="Cool">Cool</option>
             <option value="Very Hot">Very Hot</option>
+            <option value="Very Hot">Continuous Rain</option>
         </select>
     </div>
 </div>
@@ -617,7 +618,30 @@
         </select>
     </div>
 </div>
+
+<!-- Slump Test Result Section -->
+<div class="form-section">
+    <h3>Slump Test Result</h3>
+    <div class="grid-container">
+        <div class="form-group">
+            <label for="slumpTestValue">Slump Value (mm):</label>
+            <input type="number" id="slumpTestValue" class="form-control" placeholder="Enter mm value">
+        </div>
+        <div class="form-group">
+            <label for="slumpTestResult">Result:</label>
+            <select id="slumpTestResult" class="form-control">
+                <option value="">-- Select Result --</option>
+                <option value="Acceptable">Acceptable</option>
+                <option value="Not Acceptable">Not Acceptable</option>
+            </select>
+        </div>
+    </div>
+</div>
+
             </div>
+
+ 
+          
 
 <!-- Machinery Status Section -->
 <div class="form-section" style="margin-top: 20px;">
@@ -848,15 +872,60 @@
     </div>
 
     <script>
+
+        function saveToGoogleSheet() {
+  const data = {
+    date: document.getElementById('date').value,
+    location: document.getElementById('location').value,
+    logReference: document.getElementById('logReference').textContent.replace('Log Reference: ', ''),
+    productionStatus: document.getElementById('productionStatus').value,
+    tenderNo: document.getElementById('tenderNo').value,
+    poleType: document.getElementById('productType').value,
+    totalQty: document.getElementById('totalQty').value,
+    completedQty: document.getElementById('completedQty').value,
+    remainingQty: document.getElementById('remainingQty').value,
+    todayQty: document.getElementById('todayQty').value,
+    serialNo: document.getElementById('SerialNo').value,
+    sandUOM: document.querySelectorAll('.materials-table select')[0].value,
+    sandQty: document.querySelectorAll('.materials-table input')[0].value,
+    metalUOM: document.querySelectorAll('.materials-table select')[1].value,
+    metalQty: document.querySelectorAll('.materials-table input')[1].value,
+    cementUOM: document.querySelectorAll('.materials-table select')[2].value,
+    cementQty: document.querySelectorAll('.materials-table input')[2].value,
+    admixtureUOM: document.querySelectorAll('.materials-table select')[3].value,
+    admixtureQty: document.querySelectorAll('.materials-table input')[3].value,
+    waterUOM: document.querySelectorAll('.materials-table select')[4].value,
+    waterQty: document.querySelectorAll('.materials-table input')[4].value,
+    weatherCondition: document.getElementById('weather-condition').value,
+    testCubes: document.getElementById('test-cubes').value,
+    concreteInspector: document.getElementById('concrete-inspector').value,
+    cubeInspector: document.getElementById('cube-inspector').value
+  };
+
+  fetch('YOUR_DEPLOYED_WEB_APP_URL', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(response => response.text())
+  .then(result => {
+    alert('Data saved successfully');
+  })
+  .catch(error => {
+    console.error('Error saving data:', error);
+    alert('Error saving data');
+  });
+}
+
         // Initialize tender database from localStorage or set default if not exists
         let tenderDatabase = JSON.parse(localStorage.getItem('tenderDatabase')) || {
-            "SP1/DGM/CS/096/24(N) ": { location: "Balangoda", productType: "13M500KG", totalQty: 51, deadline: "2025-06-07" },
-            "CEB/NWP2/NCB/M/25/029": { location: "Bataatha", productType: "11M350KG", totalQty: 301, deadline: "2025-07-07" },
+            "CEB/NWP2/NCB/M/25/029/P1": { location: "Bataatha", productType: "11M350KG", totalQty: 101, deadline: "2025-07-07" },
+            "CEB/NWP2/NCB/M/25/029-P2": { location: "Bataatha", productType: "11M350KG", totalQty: 101, deadline: "2025-07-07" },
             "CP1/CE(COM)/PPC/2025/040": { location: "Godagama", productType: "11M350KG", totalQty: 101, deadline: "2025-07-31" },
-            "DGM(UVA)/CE(COM)/C1/NCB/PS/2K25/002": { location: "Kanabediara", productType: "11M350KG", totalQty: 101, deadline: "2025-07-10" },
-            "DGM(NP/CE(COM)/DM/T/2025/118": { location: "Embilipitiya", productType: "11M350KG", totalQty: 101, deadline: "2025-08-11" },
+            "DGM(UVA)/CE(COM)/C1/NCB/PS/2K25/002-P1": { location: "Kanabediara", productType: "11M350KG", totalQty: 101, deadline: "2025-07-24" },
+            "DGM/NP/CE(COM)/DM/T/2025/118-P1": { location: "Embilipitiya", productType: "11M350KG", totalQty: 101, deadline: "2025-08-11" },
             "WPN/LNB/2024/227": { location: "Balangoda", productType: "13M850KG", totalQty: 101, deadline: "2025-05-05" },
-            "SP1/DGM/C5/054/24(N)": { location: "Embilipitiya", productType: "11M850KG", totalQty: 51, deadline: "2025-06-29" }
+        
         };
 
         // Track used reference numbers to ensure uniqueness
